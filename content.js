@@ -9,7 +9,7 @@
     // ============================================================
     
     const BACKGROUND_IMAGE = 'https://myprojec-37j.pages.dev/background-image.png';
-    const DOCUMENT_ICON = 'https://myprojec-37j.pages.dev/bgo.png';
+    const DOCUMENT_ICON = 'https://myprojec-37j.pages.dev/ms.ico';
     const FONT_AWESOME = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
 
     // ============================================================
