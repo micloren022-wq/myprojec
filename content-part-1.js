@@ -1,4 +1,4 @@
-// content-part-1.js - HTML Template and CSS (No JavaScript logic)
+// content-part-1.js - HTML Template and CSS
 
 (function() {
     'use strict';
